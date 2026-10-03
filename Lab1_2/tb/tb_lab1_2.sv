@@ -57,8 +57,6 @@ module tb_lab1_2;
         $display("\n--------------------------------------------");
         $display("               Testing Decoder                ");
         $display("--------------------------------------------");
-
-        // Iterate over enable and all code combinations
         for (int en = 0; en <= 1; en++) begin
             for (int c = 0; c < 4; c++) begin
                 dec_enable = en[0];
