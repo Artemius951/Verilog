@@ -45,13 +45,11 @@ module tb;
             end
         end
 
-        $display("-------------------------------------------------");
         if (error_count == 0) begin
             $display("TEST PASSED: All 4 combinations verified successfully. Zero errors.");
         end else begin
             $display("TEST FAILED: %0d error(s) found.", error_count);
         end
-        $display("-------------------------------------------------");
         
         $finish; 
     end
