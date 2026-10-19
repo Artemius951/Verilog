@@ -1,10 +1,9 @@
 module tb_lab2;
-
     // W=8
-    logic [7:0] dut_a8, dut_b8;
-    logic [2:0] dut_op8;
-    logic [7:0] dut_y8;
-    logic dut_zero8, dut_negative8, dut_carry8, dut_overflow8;
+    logic [7:0]  dut_a8, dut_b8;
+    logic [2:0]  dut_op8;
+    logic [7:0]  dut_y8;
+    logic        dut_zero8, dut_negative8, dut_carry8, dut_overflow8;
 
     alu #(.W(8)) dut8 (
         .a(dut_a8), .b(dut_b8), .op(dut_op8),
@@ -16,7 +15,7 @@ module tb_lab2;
     logic [31:0] dut_a32, dut_b32;
     logic [2:0]  dut_op32;
     logic [31:0] dut_y32;
-    logic dut_zero32, dut_negative32, dut_carry32, dut_overflow32;
+    logic        dut_zero32, dut_negative32, dut_carry32, dut_overflow32;
 
     alu #(.W(32)) dut32 (
         .a(dut_a32), .b(dut_b32), .op(dut_op32),
@@ -35,7 +34,7 @@ module tb_lab2;
         logic [8:0] sum_ext, diff_ext;
         int shamt;
 
-        sum_ext = {1'b0, a} + {1'b0, b};
+        sum_ext  = {1'b0, a} + {1'b0, b};
         diff_ext = {1'b0, a} - {1'b0, b};
         shamt = int'(b[2:0]) % 8;
 
@@ -55,9 +54,18 @@ module tb_lab2;
         neg_exp  = y_exp[7];
 
         case (op)
-            3'b000: begin carry_exp = sum_ext[8]; ovf_exp = sum_ext[8] ^ sum_ext[7]; end
-            3'b001: begin carry_exp = ~diff_ext[8]; ovf_exp = diff_ext[8] ^ diff_ext[7]; end
-            default: begin carry_exp = 1'b0; ovf_exp = 1'b0; end
+            3'b000: begin
+                carry_exp = sum_ext[8];
+                ovf_exp   = (a[7] == b[7]) && (y_exp[7] != a[7]);
+            end
+            3'b001: begin
+                carry_exp = ~diff_ext[8];
+                ovf_exp   = (a[7] != b[7]) && (y_exp[7] != a[7]);
+            end
+            default: begin
+                carry_exp = 1'b0;
+                ovf_exp   = 1'b0;
+            end
         endcase
 
         dut_op8 = op; dut_a8 = a; dut_b8 = b;
@@ -65,7 +73,10 @@ module tb_lab2;
 
         if (dut_y8 !== y_exp || dut_zero8 !== zero_exp || dut_negative8 !== neg_exp ||
             dut_carry8 !== carry_exp || dut_overflow8 !== ovf_exp) begin
-            $display("[FAIL W=8] op=%b a=%h b=%h", op, a, b);
+            $display("[FAIL W=8] op=%b a=%h b=%h | exp_y=%h exp_z=%b exp_n=%b exp_c=%b exp_o=%b | got_y=%h got_z=%b got_n=%b got_c=%b got_o=%b",
+                     op, a, b,
+                     y_exp, zero_exp, neg_exp, carry_exp, ovf_exp,
+                     dut_y8, dut_zero8, dut_negative8, dut_carry8, dut_overflow8);
             fail_count8++;
             $stop;
         end else begin
@@ -111,7 +122,7 @@ module tb_lab2;
         logic [32:0] sum_ext, diff_ext;
         int shamt;
 
-        sum_ext = {1'b0, a} + {1'b0, b};
+        sum_ext  = {1'b0, a} + {1'b0, b};
         diff_ext = {1'b0, a} - {1'b0, b};
         shamt = int'(b[4:0]) % 32;
 
@@ -131,9 +142,18 @@ module tb_lab2;
         neg_exp  = y_exp[31];
 
         case (op)
-            3'b000: begin carry_exp = sum_ext[32]; ovf_exp = sum_ext[32] ^ sum_ext[31]; end
-            3'b001: begin carry_exp = ~diff_ext[32]; ovf_exp = diff_ext[32] ^ diff_ext[31]; end
-            default: begin carry_exp = 1'b0; ovf_exp = 1'b0; end
+            3'b000: begin
+                carry_exp = sum_ext[32];
+                ovf_exp   = (a[31] == b[31]) && (y_exp[31] != a[31]);
+            end
+            3'b001: begin
+                carry_exp = ~diff_ext[32];
+                ovf_exp   = (a[31] != b[31]) && (y_exp[31] != a[31]);
+            end
+            default: begin
+                carry_exp = 1'b0;
+                ovf_exp   = 1'b0;
+            end
         endcase
 
         dut_op32 = op; dut_a32 = a; dut_b32 = b;
@@ -141,7 +161,10 @@ module tb_lab2;
 
         if (dut_y32 !== y_exp || dut_zero32 !== zero_exp || dut_negative32 !== neg_exp ||
             dut_carry32 !== carry_exp || dut_overflow32 !== ovf_exp) begin
-            $display("[FAIL W=32] op=%b a=%h b=%h", op, a, b);
+            $display("[FAIL W=32] op=%b a=%h b=%h | exp_y=%h exp_z=%b exp_n=%b exp_c=%b exp_o=%b | got_y=%h got_z=%b got_n=%b got_c=%b got_o=%b",
+                     op, a, b,
+                     y_exp, zero_exp, neg_exp, carry_exp, ovf_exp,
+                     dut_y32, dut_zero32, dut_negative32, dut_carry32, dut_overflow32);
             fail_count32++;
             $stop;
         end else begin
@@ -170,7 +193,7 @@ module tb_lab2;
         check_case32(3'b111, 32'hFFFFFFFF, 32'h00000001);
 
         for (int i = 0; i < 300; i++) begin
-            logic [2:0] rnd_op;
+            logic [2:0]  rnd_op;
             logic [31:0] rnd_a, rnd_b;
             rnd_op = $urandom_range(0, 7);
             rnd_a  = $urandom;
@@ -181,11 +204,10 @@ module tb_lab2;
     endtask
 
     initial begin
-        pass_count8 = 0;
-        fail_count8 = 0;
+        pass_count8  = 0;
+        fail_count8  = 0;
         pass_count32 = 0;
         fail_count32 = 0;
-
         seed_val = 12345;
         $urandom(seed_val);
         $display("Random Seed: %0d", seed_val);
@@ -195,11 +217,9 @@ module tb_lab2;
 
         $display("\n=================================");
         $display("SIMULATION FINISHED");
-        $display("W=8:  Passed=%0d Failed=%0d", pass_count8, fail_count8);
+        $display("W=8:  Passed=%0d Failed=%0d", pass_count8,  fail_count8);
         $display("W=32: Passed=%0d Failed=%0d", pass_count32, fail_count32);
         $display("=================================\n");
-
         $finish;
     end
-
 endmodule
