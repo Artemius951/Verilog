@@ -209,7 +209,7 @@ module tb_lab2;
         pass_count32 = 0;
         fail_count32 = 0;
         seed_val = 12345;
-        $urandom(seed_val);
+        void'($urandom(seed_val));
         $display("Random Seed: %0d", seed_val);
 
         run_tests8();
