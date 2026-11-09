@@ -53,7 +53,7 @@ module tb_timer_pwm;
             if (pwm) pwm_high++; 
             
             if (tick) begin
-                $display("Time=%0t: Period=%0d тактов, PWM_high=%0d тактов", $time, cycles + 1, pwm_high);
+                $display("Time=%0t: period=%0d, duty=%0d → Period=%0d тактов, PWM_high=%0d тактов", $time, period, duty, cycles + 1, pwm_high);
                 cycles = 0;
                 pwm_high = 0;
             end else begin
