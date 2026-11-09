@@ -31,10 +31,31 @@ module tb_timer_pwm;
         period = 5; duty = 10;
         wait_ticks(10);
 
+        period = 5; duty = 4;
+        wait_ticks(10);
+
+        period = 5; duty = 5;
+        wait_ticks(10);
 
         period = 5; duty = 2;
-        wait_ticks(25);
+        wait_ticks(60);
 
+        period = 2; duty = 1;
+        wait_ticks(10);
+
+        period = 5; duty = 2;
+        wait_ticks(3);
+        rst = 1;
+        wait_ticks(2);
+        rst = 0;
+        wait_ticks(15);
+
+        period = 5; duty = 2;
+        wait_ticks(3);
+        enable = 0;
+        wait_ticks(2);
+        enable = 1;
+        wait_ticks(15);
 
         period = 3; duty = 1;
         wait_ticks(15);
@@ -45,13 +66,12 @@ module tb_timer_pwm;
     int cycles = 0;
     int pwm_high = 0;
 
-   always @(posedge clk) begin
+    always @(posedge clk) begin
         if (rst || !enable) begin
             cycles = 0;
             pwm_high = 0;
         end else begin
-            if (pwm) pwm_high++; 
-            
+            if (pwm) pwm_high++;
             if (tick) begin
                 $display("Time=%0t: period=%0d, duty=%0d → Period=%0d тактов, PWM_high=%0d тактов", $time, period, duty, cycles + 1, pwm_high);
                 cycles = 0;
